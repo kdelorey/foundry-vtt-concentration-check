@@ -15,7 +15,7 @@ Hooks.on('ready', function() {
 
         if (newHp) {
             ChatMessage.create({
-                content: "Roll for Concentration."
+                content: "Ouch! Roll to maintain concentration!"
             });
         }
     });

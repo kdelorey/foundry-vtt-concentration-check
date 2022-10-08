@@ -1,0 +1,21 @@
+{
+    "id": "concentration-check",
+    "name": "concentration-check",
+    "title": "Concentration Check",
+    "description": "Solicit a concentration check from players upon taking damage.",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Kevin DeLorey",
+            "email": "2295721+kdelorey@users.noreply.github.com"
+        }
+    ],
+
+    "url": "https://github.com/kdelorey/foundry-vtt-concentration-check",
+    "license": "https://github.com/kdelorey/foundry-vtt-concentration-check/blob/main/LICENSE",
+    "bugs": "https://github.com/kdelorey/foundry-vtt-concentration-check/issues",
+
+    "esmodules": [
+        "srcripts/index.js"
+    ]
+}

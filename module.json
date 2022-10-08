@@ -17,6 +17,6 @@
     "bugs": "https://github.com/kdelorey/foundry-vtt-concentration-check/issues",
 
     "esmodules": [
-        "srcripts/index.js"
+        "scripts/index.js"
     ]
 }

@@ -85,16 +85,16 @@ class ConcentrationCheck {
         Log.debug('hooked actor update', id);
     }
 
-    _onActorUpdated(document, changes, diff) {
+    async _onActorUpdated(actor, changes, diff) {
         if (!this.isLeader) {
             return;
         }
 
-        if (document.type !== 'character') {
+        if (actor.type !== 'character') {
             return;
         }
 
-        let isConcentrating = !!document.effects.find(v => v.flags?.core?.statusId === 'concentration');
+        let isConcentrating = !!actor.effects.find(v => v.flags?.core?.statusId === 'concentration');
         if (!isConcentrating) {
             return;
         }
@@ -102,8 +102,14 @@ class ConcentrationCheck {
         let hpDelta = diff.dhp;
 
         if (hpDelta && hpDelta < 0) {
+            let requestdata = {
+                tokenName: actor.name
+            };
+
+            const html = await renderTemplate("./modules/concentration-check/templates/concentration-message.html", requestdata);
+
             ChatMessage.create({
-                content: "Ouch! Roll to maintain concentration!"
+                content: html
             });
         }
     }

@@ -17,6 +17,14 @@
     "bugs": "https://github.com/kdelorey/foundry-vtt-concentration-check/issues",
 
     "socket": true,
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ],
+
     "esmodules": [
         "scripts/index.js"
     ]

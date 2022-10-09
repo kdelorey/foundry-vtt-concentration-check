@@ -16,6 +16,7 @@
     "license": "https://github.com/kdelorey/foundry-vtt-concentration-check/blob/main/LICENSE",
     "bugs": "https://github.com/kdelorey/foundry-vtt-concentration-check/issues",
 
+    "socket": true,
     "esmodules": [
         "scripts/index.js"
     ]

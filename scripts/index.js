@@ -16,7 +16,7 @@ class ConcentrationCheckSocket {
             game.socket.emit(ConcentrationCheckSocket.NAME, msg, () => resolve());
         });
 
-        Log.debug('emit socket event', msg);
+        Log.debug('emitted socket event', msg);
     }
 
     static isFromSelf(event) {
@@ -34,8 +34,6 @@ class ConcentrationCheckSocket {
 }
 
 class ConcentrationCheck {
-    static SOCKET = 'module.concentration-check';
-
     /**
      * Whether the concentration messages are produce by this script.
      */
@@ -58,10 +56,8 @@ class ConcentrationCheck {
             Log.info('user is not a GM; nothing to do');
             return;
         }
-        Log.debug('before socket');
 
-        game.socket.on(ConcentrationCheckSocket.NAME, (data) => this._onSocketMessage(data));
-        Log.debug('after socket');
+        game.socket.on(ConcentrationCheckSocket.NAME, this._onSocketMessage.bind(this));
 
         // inform any other GM that `this` is taking over as leader.
         ConcentrationCheckSocket.emit(ConcentrationCheckSocket.I_AM_LEADER);
@@ -89,11 +85,11 @@ class ConcentrationCheck {
         Log.debug('hooked actor update', id);
     }
 
-    _onActorUpdated(document, changes) {
+    _onActorUpdated(document, changes, diff) {
         if (!this.isLeader) {
             return;
         }
-        
+
         if (document.type !== 'character') {
             return;
         }
@@ -103,10 +99,9 @@ class ConcentrationCheck {
             return;
         }
 
-        let name = document.name;
-        let newHp = changes.system?.attributes?.hp?.value;
+        let hpDelta = diff.dhp;
 
-        if (newHp) {
+        if (hpDelta && hpDelta < 0) {
             ChatMessage.create({
                 content: "Ouch! Roll to maintain concentration!"
             });

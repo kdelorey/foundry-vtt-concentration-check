@@ -1,6 +1,99 @@
+import { ConcetrationCheckLogger as Log } from './log.js';
 
-Hooks.on('ready', function() {
-    Hooks.on('updateActor', function(document, changes) {
+class ConcentrationCheckSocket {
+    static NAME = 'module.concentration-check';
+
+    static I_AM_LEADER = 'i-am-leader';
+
+    static async emit(type, payload) {
+        let msg = { 
+            type: type,
+            source: game.users.current.id,
+            payload: payload
+        };
+
+        await new Promise(resolve => {
+            game.socket.emit(ConcentrationCheckSocket.NAME, msg, () => resolve());
+        });
+
+        Log.debug('emit socket event', msg);
+    }
+
+    static isFromSelf(event) {
+        if (typeof event === 'string') {
+            return event === game.current.id;
+        }
+
+        // undetermined, assume self
+        if (!event.source) {
+            return true;
+        }
+
+        return event.source === game.users.current.id;
+    }
+}
+
+class ConcentrationCheck {
+    static SOCKET = 'module.concentration-check';
+
+    /**
+     * Whether the concentration messages are produce by this script.
+     */
+    isLeader = false;
+
+    static start() {
+        let cc = new ConcentrationCheck();
+        
+        Log.debug('starting concentration check');
+        Hooks.once('ready', cc._onReady.bind(cc));
+
+        return cc;
+    }
+
+    async _onReady() {
+        Log.debug('game ready');
+
+        // Only GMs are allowed to run this script.
+        if (!game.users.current?.isGM) {
+            Log.info('user is not a GM; nothing to do');
+            return;
+        }
+        Log.debug('before socket');
+
+        game.socket.on(ConcentrationCheckSocket.NAME, (data) => this._onSocketMessage(data));
+        Log.debug('after socket');
+
+        // inform any other GM that `this` is taking over as leader.
+        ConcentrationCheckSocket.emit(ConcentrationCheckSocket.I_AM_LEADER);
+        this.isLeader = true;
+        this._hookUpdateActor();
+    }
+
+    _onSocketMessage(event) {
+        if (ConcentrationCheckSocket.isFromSelf(event)) {
+            return;
+        }
+
+        Log.debug('received socket message', event);
+
+        switch (event.type) {
+            case ConcentrationCheckSocket.I_AM_LEADER:
+                Log.info('new GM leader elected');
+                this.isLeader = false;
+                break;
+        }
+    }
+
+    _hookUpdateActor() {
+        let id = Hooks.on('updateActor', this._onActorUpdated.bind(this));
+        Log.debug('hooked actor update', id);
+    }
+
+    _onActorUpdated(document, changes) {
+        if (!this.isLeader) {
+            return;
+        }
+        
         if (document.type !== 'character') {
             return;
         }
@@ -18,5 +111,7 @@ Hooks.on('ready', function() {
                 content: "Ouch! Roll to maintain concentration!"
             });
         }
-    });
-});
+    }
+}
+
+ConcentrationCheck.start();

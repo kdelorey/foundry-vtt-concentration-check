@@ -24,7 +24,9 @@
             "path": "lang/en.json"
         }
     ],
-
+    "styles": [
+        "css/style.css"
+    ],
     "esmodules": [
         "scripts/index.js"
     ]

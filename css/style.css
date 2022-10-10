@@ -1,0 +1,67 @@
+.concentration-check.chat-card {
+    font-size: 12px;
+}
+
+.concentration-check.chat-card .card-header h3 {
+    flex: 2;
+    margin: 0;
+    line-height: 36px;
+    font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #4b4a44;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
+.concentration-check.chat-card .card-header h3:hover {
+    color: #111;
+    text-shadow: 0 0 10px red;
+}
+
+.concentration-check button {
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px groove #eeede0;
+}
+
+.concentration-check .flex {
+    display: flex;
+}
+
+.concentration-check .flex > .flex-1 {
+    flex: 1;
+}
+
+.concentration-check .flex > .flex-2 {
+    flex: 2;
+}
+
+.concentration-check .flex.row {
+    flex-direction: row;
+}
+
+.concentration-check .flex > .grow {
+    flex-grow: 1;
+}
+
+.concentration-check .flex.end {
+    justify-content: flex-end;
+}
+
+.concentration-check .item-roll {
+    display: block;
+    width: 30px;
+    height: 48px;
+    flex: 0 0 30px;
+    background: url(../../../icons/svg/d20-grey.svg) no-repeat 50% 50%;
+    background-size: 32px;
+    margin: 0 0.5em;
+    transform: rotate(180deg);
+}
+
+.concentration-check .item-roll:hover {
+    background: url(../../../icons/svg/d20-highlight.svg) no-repeat 50% 50%;
+    transform: none;
+}

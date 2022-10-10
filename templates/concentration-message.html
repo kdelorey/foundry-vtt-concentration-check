@@ -1,3 +1,13 @@
-<div class="concentration-check">
-    <p>{{ localize 'concentration-check.chat.message' tokenName=tokenName }}</p>
+<div class="concentration-check chat-card">
+    <header class="card-header flexrow">
+        <h3 class="item-name noborder">Concentration Saving Throw</h3>
+    </header>
+    <div class="message-content flex row">
+        <div class="flex-2">
+            <p class="grow">{{ localize 'concentration-check.chat.message' tokenName=tokenName }}</p>
+        </div>
+        <div class="flex-1 flex row end">
+            <a class="item-roll"></a>
+        </div>
+    </div>
 </div>

@@ -43,9 +43,14 @@ class ConcentrationCheck {
         let cc = new ConcentrationCheck();
         
         Log.debug('starting concentration check');
+        Hooks.once('init', cc._onInit.bind(cc));
         Hooks.once('ready', cc._onReady.bind(cc));
 
         return cc;
+    }
+
+    _onInit() {
+        Hooks.on('renderChatMessage', this._onRenderChatMessage.bind(this));
     }
 
     async _onReady() {
@@ -99,19 +104,58 @@ class ConcentrationCheck {
             return;
         }
 
-        let hpDelta = diff.dhp;
-
-        if (hpDelta && hpDelta < 0) {
-            let requestdata = {
+        if (diff.dhp < 0) {
+            let requestData = {
+                actorId: actor.id,
                 tokenName: actor.name
             };
 
-            const html = await renderTemplate("./modules/concentration-check/templates/concentration-message.html", requestdata);
+            let chatData = {
+                content: await renderTemplate("./modules/concentration-check/templates/concentration-message.html", requestData)
+            };
+            
+            setProperty(chatData, 'flags.concentration-check', requestData);
 
-            ChatMessage.create({
-                content: html
-            });
+            ChatMessage.create(chatData);
         }
+    }
+
+    async _onRenderChatMessage(message, html, data) {
+        const card = html.find('.concentration-check.chat-card');
+        if (card.length <= 0) {
+            return;
+        }
+
+        Log.debug('rendering chat message', message);
+
+        let actorId = message.getFlag('concentration-check', 'actorId');
+        let actor = game.actors.get(actorId);
+        if (!actor) {
+            Log.warn('intended actor receipient not found', actorId);
+            return;
+        }
+
+        // If we are re-rendering (say after a refresh), check to see if a value was already 
+        // rolled and if so, show its value instead of the "roll" button.
+        let existingRollValue = message.getFlag('concentration-check', 'rollValue');
+        if (!!existingRollValue) {
+            html.find('.roll-saving-throw').remove();
+            return;
+        }
+
+        // Only allow people with ownership of the actor to roll the saving throw. Everyone
+        // else will just see the message without the "roll" button.
+        if (actor.ownership[game.user.id] !== foundry.CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER) {
+            Log.debug('message is intended for another user; hiding roll capability...', actor, game.user.id);
+            html.find('.only-actor-owner').remove();
+            return;
+        }
+
+        $('.roll-saving-throw', html).click($.proxy(function() {
+            Log.debug('clicked saving throw')
+            html.find('.roll-saving-throw').remove();
+            message.setFlag('concentration-check', 'rollValue', 20);
+        }))
     }
 }
 

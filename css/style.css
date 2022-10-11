@@ -50,7 +50,7 @@
     justify-content: flex-end;
 }
 
-.concentration-check .item-roll {
+.concentration-check .roll-saving-throw {
     display: block;
     width: 30px;
     height: 48px;
@@ -61,7 +61,7 @@
     transform: rotate(180deg);
 }
 
-.concentration-check .item-roll:hover {
+.concentration-check .roll-saving-throw:hover {
     background: url(../../../icons/svg/d20-highlight.svg) no-repeat 50% 50%;
     transform: none;
 }

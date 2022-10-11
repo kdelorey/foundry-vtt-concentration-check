@@ -151,10 +151,37 @@ class ConcentrationCheck {
             return;
         }
 
-        $('.roll-saving-throw', html).click($.proxy(function() {
-            Log.debug('clicked saving throw')
+        $('.roll-saving-throw', html).click($.proxy(async function() {
+            Log.debug('clicked saving throw; rolling...');
+
+            let rollResult;
+
+            if (actor.rollAbilitySave) {
+                let r = await actor.rollAbilitySave('con', { chatMessage: false });
+
+                if (r instanceof Roll && game.dice3d) {
+                    await game.dice3d.showForRoll(r, game.user, true);
+                }
+
+                rollResult = {
+                    total: r.total,
+                    isCritical: r.isCritical,
+                    isFumble: r.isFumble
+                };
+
+                Log.debug('roll finished', r);
+            } else {
+                let r = await Roll.create('1d20').evaluate();
+                Log.debug('roll finished', r);
+                rollResult = {
+                    total: r.total,
+                    isCritical: r.isCritical,
+                    isFumble: r.isFumble
+                }
+            }
+
             html.find('.roll-saving-throw').remove();
-            message.setFlag('concentration-check', 'rollValue', 20);
+            message.setFlag('concentration-check', 'rollValue', rollResult);
         }))
     }
 }
